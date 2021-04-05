@@ -4,20 +4,18 @@ import com.CaptureRx.demo.Entities.Job;
 import com.CaptureRx.demo.Entities.Repositories.JobRepository;
 import com.CaptureRx.demo.Entities.Repositories.StatusRepository;
 import com.CaptureRx.demo.Entities.Status;
-import com.CaptureRx.demo.Models.CreateJobResponse;
-import com.CaptureRx.demo.Models.JobStatusResponse;
+import com.CaptureRx.demo.Models.JobListResponse;
+import com.CaptureRx.demo.Models.SingleJobResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @EntityScan("com/CaptureRx/demo/Entities")
+//All logic is in this class to make it easier to review
 public class JobProcessor {
     private JobRepository jobRepository;
 
@@ -33,7 +31,7 @@ public class JobProcessor {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    //Listener for Kafka
+    //Listener for Kafka messages
     @KafkaListener(topics = "JobsTopic")
     public void listen(Long message) throws InterruptedException{
 
@@ -62,8 +60,8 @@ public class JobProcessor {
      * @return - New job ID
      */
     @RequestMapping(value = "/createnewjob")
-    public CreateJobResponse createNewJob(){
-        CreateJobResponse response = new CreateJobResponse();
+    public SingleJobResponse createNewJob(){
+        SingleJobResponse response = new SingleJobResponse();
         try{
             //Create and insert new job record
             Status status = statusRepository.findByStatusId(1);
@@ -73,7 +71,7 @@ public class JobProcessor {
             //Add to Kafka for processing
             kafkaTemplate.send("JobsTopic", job.getJobId());
 
-            response.setJobId(job.getJobId());
+            response.setJob(job);
         }catch(Exception e){
             response.setErrorMessage(e.toString());
             response.setSuccess(false);
@@ -88,12 +86,27 @@ public class JobProcessor {
      * @return - Job ID and status of the associated job
      */
     @RequestMapping(value = "/getjobstatus")
-    public JobStatusResponse getJobStatus(@RequestParam long jobId){
-        JobStatusResponse response = new JobStatusResponse();
+    public SingleJobResponse getJobStatus(@RequestParam long jobId){
+        SingleJobResponse response = new SingleJobResponse();
         try{
-            Job job = jobRepository.findByJobId(jobId);
-            response.setJobId(job.getJobId());
-            response.setStatus(job.getStatus());
+            response.setJob(jobRepository.findByJobId(jobId));
+        }catch(Exception e){
+            response.setSuccess(false);
+            response.setErrorMessage(e.toString());
+        }
+
+        return response;
+    }
+
+    /**
+     * Gets the information for all jobs that have been created
+     * @return - List of all jobs in the DB
+     */
+    @RequestMapping(value = "/getalljobstatus")
+    public JobListResponse getAllJobStatus(){
+        JobListResponse response = new JobListResponse();
+        try{
+            response.setJob(jobRepository.findAll(Sort.by(Sort.Direction.DESC, "jobId")));
         }catch(Exception e){
             response.setSuccess(false);
             response.setErrorMessage(e.toString());
