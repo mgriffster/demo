@@ -1,0 +1,9 @@
+<h2>Current Jobs</h2>
+<button (click)="refresh()">Refresh</button>
+  <ul class="jobs">
+    <li *ngFor="let job of jobs.jobs">
+      <a routerLink="/detail/{{job.jobId}}">
+        <span class="badge">{{job.jobId}}</span> {{job.status.name}}
+      </a>
+    </li>
+  </ul>

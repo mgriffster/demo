@@ -1,0 +1,11 @@
+<button (click)="goBack()">Go Back</button>
+
+<div *ngIf="job">
+    <h2>Job Details</h2>
+    <div><span>id: </span>{{job.job.jobId}}</div>
+    <div>
+      <div id="job-status">Status: {{job.job.status.name}}</div>
+      <div id="job-date">Date Created: {{job.job.dateCreated}}</div>
+    </div>
+  </div>
+  
