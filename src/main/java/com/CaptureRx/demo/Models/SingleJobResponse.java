@@ -1,13 +1,24 @@
 package com.CaptureRx.demo.Models;
 
-public class CreateJobResponse {
+
+import com.CaptureRx.demo.Entities.Job;
+
+public class SingleJobResponse {
 
     private String errorMessage;
-    private boolean success ;
-    private long jobId = -1;
+    private boolean success;
+    private Job job;
 
-    public CreateJobResponse(){
+    public SingleJobResponse(){
         this.success = true;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
     }
 
     public String getErrorMessage() {
@@ -26,11 +37,4 @@ public class CreateJobResponse {
         this.success = success;
     }
 
-    public long getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(long jobId) {
-        this.jobId = jobId;
-    }
 }
