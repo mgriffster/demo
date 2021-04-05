@@ -8,6 +8,10 @@ import javax.persistence.Table;
 @Table(name = "status")
 public class Status {
 
+    public static final Long NEW_STATUS = 1L;
+    public static final Long IN_PROCESSING_STATUS = 2L;
+    public static final Long DONE_STATUS = 3L;
+
     public Status(){}
 
     @Id

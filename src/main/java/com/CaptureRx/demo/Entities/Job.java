@@ -3,11 +3,11 @@ package com.CaptureRx.demo.Entities;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "job")
 public class Job {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="job_id_sequence")
@@ -19,6 +19,8 @@ public class Job {
     private Status status;
 
     private LocalDate dateCreated;
+
+    public Job(){}
 
     public Job(Status status){
         this.status = status;
