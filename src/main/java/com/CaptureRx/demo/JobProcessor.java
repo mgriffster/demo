@@ -64,7 +64,7 @@ public class JobProcessor {
         SingleJobResponse response = new SingleJobResponse();
         try{
             //Create and insert new job record
-            Status status = statusRepository.findByStatusId(1);
+            Status status = statusRepository.findByStatusId(Status.NEW_STATUS);
             Job job = new Job(status);
             jobRepository.save(job);
 
